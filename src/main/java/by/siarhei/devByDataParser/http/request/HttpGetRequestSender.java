@@ -1,5 +1,6 @@
 package by.siarhei.devByDataParser.http.request;
 
+import by.siarhei.devByDataParser.entity.ParsedCompany;
 import by.siarhei.devByDataParser.http.exception.RequestSendException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,9 +36,9 @@ public class HttpGetRequestSender {
         }
     }
 
-    public List<String> getHTMLBodyFromResponse(List<String> requestURLs) throws RequestSendException {
+    public List<String> getHTMLBodyFromResponse(List<String> URLList) throws RequestSendException {
         List<String> bodyList = new ArrayList<>();
-        for (String URL : requestURLs) {
+        for (String URL : URLList) {
             int count = 0;
             try {
                 count++;
@@ -52,6 +53,24 @@ public class HttpGetRequestSender {
             }
         }
         return bodyList;
+    }
+
+    public void fillBodyInParsedCompanyList(List<ParsedCompany> parsedCompanyList) throws RequestSendException {
+        for (ParsedCompany parsedCompany : parsedCompanyList) {
+            int count = 0;
+            try {
+                count++;
+                if (count == REQUEST_SENT_LIMIT) {
+                    pause();
+                }
+                String URL = parsedCompany.getUrl();
+                String body = getResponseByURL(URL);
+                parsedCompany.setHtmlComponentBody(body);
+                logger.info(String.format(SENT_MESSAGE, URL));
+            } catch (IOException | InterruptedException e) {
+                throw new RequestSendException(ERROR_MESSAGE + e.getMessage());
+            }
+        }
     }
 
     private void pause() throws InterruptedException {

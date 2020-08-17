@@ -1,5 +1,5 @@
 package by.siarhei.devByDataParser.parser.api;
 
-public interface HtmlBodyDataParser {
-    int parseEmployeeNumberFromHTMLResponseBody(String responseBody);
+public interface HtmlBodyDataParser <T>{
+     T parseDataFromResponseBody(String responseBody);
 }
