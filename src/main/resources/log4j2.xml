@@ -9,7 +9,7 @@
                      filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
 
             <PatternLayout>
-                <Pattern>%d %p %c [%t] %m%n</Pattern>
+                <Pattern >%d %p %m%n</Pattern>
             </PatternLayout>
 
             <Policies>

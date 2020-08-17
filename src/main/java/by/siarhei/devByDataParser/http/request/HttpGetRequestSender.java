@@ -18,51 +18,56 @@ public class HttpGetRequestSender {
 
     private static final String ERROR_MESSAGE = "GET request cant be sent with message: ";
     private static final int ONE_MINUTE_MS = 60000;
+    private static final int REQUEST_SENT_LIMIT = 300;
     private static final int CURRENT_PAUSE_TIME_MS = ONE_MINUTE_MS;
     private static final String SENT_MESSAGE = "Request on URL %s was sent";
+    private final HttpClient client;
+
+    public HttpGetRequestSender() {
+        client = HttpClient.newHttpClient();
+    }
 
     public String getHTMLBodyFromResponse(String requestURL) throws RequestSendException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(requestURL))
-                .build();
         try {
-            HttpResponse<String> response = client.send(request,
-                    HttpResponse.BodyHandlers.ofString());
-            return response.body();
+            return getResponseByURL(requestURL);
         } catch (IOException | InterruptedException e) {
             throw new RequestSendException(ERROR_MESSAGE + e.getMessage());
         }
     }
 
-    public List<String> getHTMLBodyFromResponse(List<String> requestURLs) throws RequestSendException, InterruptedException {
+    public List<String> getHTMLBodyFromResponse(List<String> requestURLs) throws RequestSendException {
         List<String> bodyList = new ArrayList<>();
-        int count = 0;
         for (String URL : requestURLs) {
-            count++;
-            if(count == 300){
-               pause();
-            }
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(URL))
-                    .build();
+            int count = 0;
             try {
-                HttpResponse<String> response = client.send(request,
-                        HttpResponse.BodyHandlers.ofString());
-                bodyList.add(response.body());
+                count++;
+                if (count == REQUEST_SENT_LIMIT) {
+                    pause();
+                }
+                String body = getResponseByURL(URL);
+                bodyList.add(body);
                 logger.info(String.format(SENT_MESSAGE, URL));
             } catch (IOException | InterruptedException e) {
                 throw new RequestSendException(ERROR_MESSAGE + e.getMessage());
             }
-
         }
         return bodyList;
     }
 
-    private void pause() throws InterruptedException{
+    private void pause() throws InterruptedException {
         logger.info(String.format("Sender takes a break for %s min", CURRENT_PAUSE_TIME_MS / ONE_MINUTE_MS));
         Thread.sleep(CURRENT_PAUSE_TIME_MS);
+    }
+
+    private String getResponseByURL(String URL) throws IOException, InterruptedException {
+        HttpRequest request = formRequest(URL);
+        HttpResponse<String> response = client.send(request,
+                HttpResponse.BodyHandlers.ofString());
+        return response.body();
+    }
+
+    private HttpRequest formRequest(String URL) {
+        return HttpRequest.newBuilder().uri(URI.create(URL)).build();
     }
 }
 

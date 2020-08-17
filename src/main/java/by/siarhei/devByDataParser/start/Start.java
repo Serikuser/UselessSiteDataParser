@@ -2,7 +2,8 @@ package by.siarhei.devByDataParser.start;
 
 import by.siarhei.devByDataParser.http.exception.RequestSendException;
 import by.siarhei.devByDataParser.http.request.HttpGetRequestSender;
-import by.siarhei.devByDataParser.parser.ResponseParser;
+import by.siarhei.devByDataParser.parser.impl.HtmlResponseBodyEmployeeParser;
+import by.siarhei.devByDataParser.parser.api.HtmlBodyDataParser;
 import by.siarhei.devByDataParser.reader.InputDataReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,11 +18,11 @@ public class Start {
         InputDataReader reader = new InputDataReader();
         List<String> urlList = reader.readData();
         HttpGetRequestSender requestSender = new HttpGetRequestSender();
-        ResponseParser parser = new ResponseParser();
+        HtmlBodyDataParser parser = new HtmlResponseBodyEmployeeParser();
         List<String> bodes = new ArrayList<>();
         try {
             bodes = requestSender.getHTMLBodyFromResponse(urlList);
-        } catch (InterruptedException | RequestSendException e) {
+        } catch (RequestSendException e) {
             logger.error("Something went wrong Error message: " + e.getMessage());
         }
         if (!bodes.isEmpty()) {
