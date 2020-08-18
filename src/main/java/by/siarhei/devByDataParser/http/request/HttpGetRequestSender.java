@@ -38,11 +38,11 @@ public class HttpGetRequestSender {
 
     public List<String> getHTMLBodyFromResponse(List<String> URLList) throws RequestSendException {
         List<String> bodyList = new ArrayList<>();
-        int count = 0;
+        int count = 1;
         for (String URL : URLList) {
             try {
                 if (count == REQUEST_SENT_LIMIT) {
-                    count = 0;
+                    count = 1;
                     pause();
                 }
                 String body = getResponseByURL(URL);
@@ -57,11 +57,11 @@ public class HttpGetRequestSender {
     }
 
     public void fillBodyInParsedCompanyList(List<ParsedCompany> parsedCompanyList) throws RequestSendException {
-        int count = 0;
+        int count = 1;
         for (ParsedCompany parsedCompany : parsedCompanyList) {
             try {
                 if (count == REQUEST_SENT_LIMIT) {
-                    count = 0;
+                    count = 1;
                     pause();
                 }
                 String URL = parsedCompany.getUrl();
