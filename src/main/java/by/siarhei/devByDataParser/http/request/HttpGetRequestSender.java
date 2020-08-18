@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
-
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -27,7 +26,7 @@ public class HttpGetRequestSender {
     private final HttpClient client;
 
     public HttpGetRequestSender() {
-       this(STANDARD_SENT_LIMIT, ONE_MINUTE_MS * 2);
+        this(STANDARD_SENT_LIMIT, ONE_MINUTE_MS * 2);
     }
 
     public HttpGetRequestSender(int requestSentLimit, int pauseTime) {

@@ -8,12 +8,12 @@ public class ParsedCompany {
     private String htmlComponentBody;
     private int employeeInBelarusNumber;
 
-    public ParsedCompany(String name, String url){
+    public ParsedCompany(String name, String url) {
         this.url = url;
         this.name = name;
     }
 
-    public ParsedCompany(){
+    public ParsedCompany() {
 
     }
 
