@@ -15,6 +15,7 @@ public class DevByParsingInitializer {
     private static final Logger logger = LogManager.getLogger();
 
     private static final String DEV_BY_COMPANIES_URL = "https://companies.dev.by/";
+
     private final HttpGetRequestSender requestSender;
     private final HtmlBodyDataParser<Integer> companyDataParser;
     private final HtmlBodyDataParser<List<ParsedCompany>> companyListParser;
@@ -34,7 +35,7 @@ public class DevByParsingInitializer {
                 fillNumberOfEmployeeParsedCompanyList();
             }
         } catch (RequestSendException e) {
-            logger.error("Something went wrong Error message: " + e.getMessage());
+            logger.error(String.format("Something went wrong Error message: %s", e.getMessage()));
         }
     }
 

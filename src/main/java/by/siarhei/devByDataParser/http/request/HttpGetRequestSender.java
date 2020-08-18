@@ -19,12 +19,20 @@ public class HttpGetRequestSender {
 
     private static final String ERROR_MESSAGE = "GET request cant be sent with message: ";
     private static final int ONE_MINUTE_MS = 60000;
-    private static final int REQUEST_SENT_LIMIT = 150;
-    private static final int CURRENT_PAUSE_TIME_MS = ONE_MINUTE_MS * 2;
     private static final String SENT_MESSAGE = "Request №[%s] on URL %s was sent";
+    private static final int STANDARD_SENT_LIMIT = 200;
+
+    private final int requestSentLimit;
+    private final int currentPauseTimeMs;
     private final HttpClient client;
 
     public HttpGetRequestSender() {
+       this(STANDARD_SENT_LIMIT, ONE_MINUTE_MS * 2);
+    }
+
+    public HttpGetRequestSender(int requestSentLimit, int pauseTime) {
+        this.requestSentLimit = requestSentLimit;
+        this.currentPauseTimeMs = pauseTime;
         client = HttpClient.newHttpClient();
     }
 
@@ -36,13 +44,13 @@ public class HttpGetRequestSender {
         }
     }
 
-    public List<String> getHTMLBodyFromResponse(List<String> URLList) throws RequestSendException {
+    public List<String> getHTMLBodyFromResponse(List<String> urlList) throws RequestSendException {
         List<String> bodyList = new ArrayList<>();
-        int count = 0;
-        for (String URL : URLList) {
+        int count = 1;
+        for (String URL : urlList) {
             try {
-                if (count == REQUEST_SENT_LIMIT) {
-                    count = 0;
+                if (count == requestSentLimit) {
+                    count = 1;
                     pause();
                 }
                 String body = getResponseByURL(URL);
@@ -57,17 +65,17 @@ public class HttpGetRequestSender {
     }
 
     public void fillBodyInParsedCompanyList(List<ParsedCompany> parsedCompanyList) throws RequestSendException {
-        int count = 0;
+        int count = 1;
         for (ParsedCompany parsedCompany : parsedCompanyList) {
             try {
-                if (count == REQUEST_SENT_LIMIT) {
-                    count = 0;
+                if (count == requestSentLimit) {
+                    count = 1;
                     pause();
                 }
-                String URL = parsedCompany.getUrl();
-                String body = getResponseByURL(URL);
+                String url = parsedCompany.getUrl();
+                String body = getResponseByURL(url);
                 parsedCompany.setHtmlComponentBody(body);
-                logger.info(String.format(SENT_MESSAGE, count, URL));
+                logger.info(String.format(SENT_MESSAGE, count, url));
                 count++;
             } catch (IOException | InterruptedException e) {
                 throw new RequestSendException(ERROR_MESSAGE + e.getMessage());
@@ -76,19 +84,19 @@ public class HttpGetRequestSender {
     }
 
     private void pause() throws InterruptedException {
-        logger.info(String.format("Sender takes a break for %s min", CURRENT_PAUSE_TIME_MS / ONE_MINUTE_MS));
-        Thread.sleep(CURRENT_PAUSE_TIME_MS);
+        logger.info(String.format("Sender takes a break for %s min", currentPauseTimeMs / ONE_MINUTE_MS));
+        Thread.sleep(currentPauseTimeMs);
     }
 
-    private String getResponseByURL(String URL) throws IOException, InterruptedException {
-        HttpRequest request = formRequest(URL);
+    private String getResponseByURL(String url) throws IOException, InterruptedException {
+        HttpRequest request = formRequest(url);
         HttpResponse<String> response = client.send(request,
                 HttpResponse.BodyHandlers.ofString());
         return response.body();
     }
 
-    private HttpRequest formRequest(String URL) {
-        return HttpRequest.newBuilder().uri(URI.create(URL)).build();
+    private HttpRequest formRequest(String url) {
+        return HttpRequest.newBuilder().uri(URI.create(url)).build();
     }
 }
 
