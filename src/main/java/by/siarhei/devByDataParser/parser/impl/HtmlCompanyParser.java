@@ -41,7 +41,8 @@ public class HtmlCompanyParser implements HtmlBodyDataParser<List<ParsedCompany>
         }
         return parsedCompanyList;
     }
-    private String formURL(String companyURLName){
+
+    private String formURL(String companyURLName) {
         return DEV_BY_COMPANY_URL + companyURLName;
     }
 }

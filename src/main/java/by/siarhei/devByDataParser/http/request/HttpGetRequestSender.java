@@ -18,13 +18,21 @@ public class HttpGetRequestSender {
     private static final Logger logger = LogManager.getLogger();
 
     private static final String ERROR_MESSAGE = "GET request cant be sent with message: ";
-    private static final int ONE_MINUTE_MS = 60000;
-    private static final int REQUEST_SENT_LIMIT = 150;
-    private static final int CURRENT_PAUSE_TIME_MS = ONE_MINUTE_MS * 2;
     private static final String SENT_MESSAGE = "Request №[%s] on URL %s was sent";
+    private static final int ONE_MINUTE_MS = 60000;
+    private static final int STANDARD_SENT_LIMIT = 150;
+
+    private final int currentPauseTimeMs;
+    private final int requestSentLimit;
     private final HttpClient client;
 
     public HttpGetRequestSender() {
+        this(ONE_MINUTE_MS * 2, STANDARD_SENT_LIMIT);
+    }
+
+    public HttpGetRequestSender(int pauseTimeInMS, int requestSentLimit) {
+        this.currentPauseTimeMs = pauseTimeInMS;
+        this.requestSentLimit = requestSentLimit;
         client = HttpClient.newHttpClient();
     }
 
@@ -41,7 +49,7 @@ public class HttpGetRequestSender {
         int count = 1;
         for (String URL : URLList) {
             try {
-                if (count == REQUEST_SENT_LIMIT) {
+                if (count == requestSentLimit) {
                     count = 1;
                     pause();
                 }
@@ -60,7 +68,7 @@ public class HttpGetRequestSender {
         int count = 1;
         for (ParsedCompany parsedCompany : parsedCompanyList) {
             try {
-                if (count == REQUEST_SENT_LIMIT) {
+                if (count == requestSentLimit) {
                     count = 1;
                     pause();
                 }
@@ -76,8 +84,8 @@ public class HttpGetRequestSender {
     }
 
     private void pause() throws InterruptedException {
-        logger.info(String.format("Sender takes a break for %s min", CURRENT_PAUSE_TIME_MS / ONE_MINUTE_MS));
-        Thread.sleep(CURRENT_PAUSE_TIME_MS);
+        logger.info(String.format("Sender takes a break for %s min", currentPauseTimeMs / ONE_MINUTE_MS));
+        Thread.sleep(currentPauseTimeMs);
     }
 
     private String getResponseByURL(String URL) throws IOException, InterruptedException {
