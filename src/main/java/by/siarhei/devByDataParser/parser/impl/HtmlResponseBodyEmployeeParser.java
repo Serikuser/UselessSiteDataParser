@@ -8,7 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class HtmlResponseBodyEmployeeParser implements HtmlBodyDataParser <Integer>{
+public class HtmlResponseBodyEmployeeParser implements HtmlBodyDataParser<Integer> {
     private static final String NUMBERS_REGEX = "[^0-9]";
     private static final String EMPLOYEE_COUNT_CLASS = "employee-count";
     private static final int INDEX_FIRST = 0;

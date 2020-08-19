@@ -15,27 +15,32 @@ public class DevByParsingInitializer {
     private static final Logger logger = LogManager.getLogger();
 
     private static final String DEV_BY_COMPANIES_URL = "https://companies.dev.by/";
+    private static final int ONE_MINUTE_MS = 60000;
+
     private final HttpGetRequestSender requestSender;
     private final HtmlBodyDataParser<Integer> companyDataParser;
     private final HtmlBodyDataParser<List<ParsedCompany>> companyListParser;
     private List<ParsedCompany> parsedCompanyList;
 
     public DevByParsingInitializer() {
-        requestSender = new HttpGetRequestSender();
+        requestSender = new HttpGetRequestSender(100,ONE_MINUTE_MS * 3);
         companyDataParser = new HtmlResponseBodyEmployeeParser();
         companyListParser = new HtmlCompanyParser();
     }
 
-    public void parse() {
+    public boolean parse() {
+        boolean isParsed = false;
         try {
             String companyListBody = requestSender.getHTMLBodyFromResponse(DEV_BY_COMPANIES_URL);
             parsedCompanyList = companyListParser.parseDataFromResponseBody(companyListBody);
             if (!parsedCompanyList.isEmpty()) {
                 fillNumberOfEmployeeParsedCompanyList();
+                isParsed = true;
             }
         } catch (RequestSendException e) {
-            logger.error("Something went wrong Error message: " + e.getMessage());
+            logger.error(String.format("Something went wrong Error message: %s", e.getMessage()));
         }
+        return isParsed;
     }
 
     public void printTotalNumberOfEmployeeInBelarus() {
@@ -46,7 +51,7 @@ public class DevByParsingInitializer {
             total = total + numberOfEmployee;
             logger.info(String.format("Company name: %s, Number of employee in Belarus: %s", companyName, numberOfEmployee));
         }
-        logger.info(String.format("Total employee in Belarus: ~%s", total));
+        logger.info(String.format("Total employee in Belarus: ~%s in %s companies", total, parsedCompanyList.size()));
     }
 
     private void fillNumberOfEmployeeParsedCompanyList() throws RequestSendException {

@@ -4,5 +4,5 @@ import org.jsoup.nodes.Element;
 
 public interface HtmlElementDataValidator {
 
-    boolean isValid (Element element);
+    boolean isValid(Element element);
 }
