@@ -33,6 +33,7 @@ public class HttpGetRequestSender {
         this.requestSentLimit = requestSentLimit;
         this.currentPauseTimeMs = pauseTime;
         client = HttpClient.newHttpClient();
+        logger.info(String.format("Sending started with %s sent limit and [%s] min pause time", requestSentLimit, currentPauseTimeMs / ONE_MINUTE_MS));
     }
 
     public String getHTMLBodyFromResponse(String requestURL) throws RequestSendException {

@@ -4,7 +4,9 @@ public class Start {
 
     public static void main(String[] args) {
         DevByParsingInitializer parser = new DevByParsingInitializer();
-        parser.parse();
-        parser.printTotalNumberOfEmployeeInBelarus();
+        boolean isParsed = parser.parse();
+        if(isParsed){
+            parser.printTotalNumberOfEmployeeInBelarus();
+        }
     }
 }
