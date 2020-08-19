@@ -16,7 +16,7 @@ public class InputElementDataValidator implements HtmlElementDataValidator {
         return !isElementDataNotNumeric(elementData);
     }
 
-    private boolean isElementDataNotNumeric(String elementData) {
+    public boolean isElementDataNotNumeric(String elementData) {
         Pattern pattern = Pattern.compile(REGEX_NON_NUMERIC);
         Matcher matcher = pattern.matcher(elementData);
         return matcher.find();
