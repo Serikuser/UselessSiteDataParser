@@ -7,12 +7,15 @@ import org.apache.logging.log4j.Logger;
 
 public class Start {
     private static final Logger logger = LogManager.getLogger();
+
     public static final String ERROR_MESSAGE = "Initialization arguments were not entered or incorrect " +
             "(not negative integer sentLimit, not negative integer pauseTime,string time unit allowed values : ms, min). " +
             " Initialization started with default values;";
+    private static final String LINE_DELIMITER = "====================================================================================";
 
 
     public static void main(String[] args) {
+        logger.info(LINE_DELIMITER);
         DevByParsingInitializer parser;
         InputArgsValidator validator = new InitArgsValidator();
         if (validator.isArgsValid(args)) {

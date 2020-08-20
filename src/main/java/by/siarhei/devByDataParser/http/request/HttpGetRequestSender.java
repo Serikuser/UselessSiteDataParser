@@ -18,7 +18,7 @@ public class HttpGetRequestSender {
 
     private static final String ERROR_MESSAGE = "GET request cant be sent with message: ";
     private static final int ONE_MINUTE_MS = 60000;
-    private static final String SENT_MESSAGE = "Request №[%s] on URL %s was sent";
+    private static final String SENT_MESSAGE = "Request [%s/%s] on [%s/%s URL] %s was sent";
     private static final int STANDARD_SENT_LIMIT = 200;
 
     private final int requestSentLimit;
@@ -46,17 +46,19 @@ public class HttpGetRequestSender {
 
     public List<String> getHTMLBodyFromResponse(List<String> urlList) throws RequestSendException {
         List<String> bodyList = new ArrayList<>();
-        int count = 1;
+        int limitCounter = 1;
+        int urlCounter = 1;
         for (String URL : urlList) {
             try {
-                if (count == requestSentLimit) {
-                    count = 1;
+                if (limitCounter == requestSentLimit + 1) {
+                    limitCounter = 1;
                     pause();
                 }
                 String body = getResponseByURL(URL);
                 bodyList.add(body);
-                logger.info(String.format(SENT_MESSAGE, count, URL));
-                count++;
+                logger.info(String.format(SENT_MESSAGE, limitCounter, requestSentLimit, urlCounter, urlList.size(), URL));
+                urlCounter++;
+                limitCounter++;
             } catch (IOException | InterruptedException e) {
                 throw new RequestSendException(ERROR_MESSAGE + e.getMessage());
             }
@@ -66,17 +68,19 @@ public class HttpGetRequestSender {
 
     public void fillBodyInParsedCompanyList(List<ParsedCompany> parsedCompanyList) throws RequestSendException {
         int count = 1;
+        int urlCounter = 1;
         for (ParsedCompany parsedCompany : parsedCompanyList) {
             try {
-                if (count == requestSentLimit) {
+                if (count == requestSentLimit + 1) {
                     count = 1;
                     pause();
                 }
                 String url = parsedCompany.getUrl();
                 String body = getResponseByURL(url);
                 parsedCompany.setHtmlComponentBody(body);
-                logger.info(String.format(SENT_MESSAGE, count, url));
+                logger.info(String.format(SENT_MESSAGE, count, requestSentLimit, urlCounter, parsedCompanyList.size(), url));
                 count++;
+                urlCounter++;
             } catch (IOException | InterruptedException e) {
                 throw new RequestSendException(ERROR_MESSAGE + e.getMessage());
             }
